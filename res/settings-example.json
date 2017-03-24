@@ -1,0 +1,9 @@
+{
+    "postgres":{
+        "host":"localhost",
+        "user":"USER",
+        "passwd":"PASSWD",
+        "db":"DB",
+        "schema":"SCHEMA"
+    }
+}
