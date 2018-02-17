@@ -4,33 +4,29 @@ import os
 import pandas
 import sqlalchemy as sql
 
-postgres = dict()
-settings = dict()
-settings_path = os.path.join(os.path.dirname(__file__), '..', 'res', 'settings.json')
-
-
-def load_settings(path=settings_path):
+def load_settings(path):
     with open(path) as json_data_file:
-        data = json.load(json_data_file)
-        settings_dict = dict(data)
-
-    print('Settings loaded.')
+        settings = json.load(json_data_file)
+        settings_dict = dict(settings)
 
     return settings_dict
 
 
-def establish_db_connection():
-    connection = 'postgresql+psycopg2://' + postgres['user'] + ':' + postgres['passwd'] + '@' + postgres['host'] + '/' + postgres['db']
+def establish_db_connection(config):
+    connection = 'postgresql+psycopg2://' + config['user'] + ':' + config['passwd'] + '@' + config['host'] + '/' + config['db']
     engine = sql.create_engine(connection)
-    print(engine)
     return engine
 
 
-if __name__ == '__main__':
+def get_db_config():
     fn = os.path.join(os.path.dirname(__file__), '..', 'res', 'settings.json')
-    settings = load_settings()
+    settings = load_settings(fn)
     postgres = settings['postgres']
-    db = establish_db_connection()
+    return establish_db_connection(postgres)
+
+
+if __name__ == '__main__':
+    db = get_db_config()
 
     # print(db.table_names('public'))
 
