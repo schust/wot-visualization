@@ -89,3 +89,4 @@ ENV/
 .ropeproject
 
 res/settings.json
+/data/
