@@ -30,7 +30,7 @@ def process(db):
     for tank_id, tank in tanks.iterrows():
         current_tank = 'tankid=[{0}]: {1}'.format(str(tank_id), tank['shortname'])
         print(current_tank)
-        print(time.strftime('Current time: %H:%M:%S', time.gmtime(time.time())))
+        print(time.strftime('Current time: %H:%M:%S', time.localtime(time.time())))
 
         tank_winrates = get_tank_winrates(db, tank_id)
         if len(tank_winrates.index) < 100:  # todo maybe higher sample size? maybe add sample sizes to plot?
