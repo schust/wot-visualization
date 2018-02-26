@@ -28,8 +28,6 @@ def get_db_config():
 if __name__ == '__main__':
     db = get_db_config()
 
-    # print(db.table_names('public'))
-
     # data = pandas.read_sql("SELECT COUNT(*) FROM public.player", con=db)
     data = pandas.read_sql("SELECT * FROM public.player_vehicle LIMIT 100", con=db)
     print(data)

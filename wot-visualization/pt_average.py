@@ -2,7 +2,7 @@ import time
 import re
 
 from unidecode import unidecode
-from main import get_db_config
+from db import get_db_config
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
@@ -11,7 +11,8 @@ import matplotlib.pyplot as plt
 def get_player_winrates(db, ids, min_battles=100):
     sql = "SELECT accountid as player_id, CAST(wins AS float) / CAST(battlescount AS float) as player_winrate " \
           "FROM wot.player " \
-          "WHERE accountid in %s and battlescount > %s" % (str(tuple(ids.values)), str(min_battles))  # that's a hack to get the proper string
+          "WHERE accountid in %s and battlescount > %s" % (
+          str(tuple(ids.values)), str(min_battles))  # that's a hack to get the proper string
     data = pd.read_sql(sql, con=db, index_col='player_id')
     return data
 
@@ -24,7 +25,7 @@ def get_tank_winrates(db, vehicle_id, min_battles=100):
     return data
 
 
-def process(db):
+def pt_average(db):
     tanks = get_tanks(db)
     tanks.sort_index(inplace=True, ascending=False)
     for tank_id, tank in tanks.iterrows():
@@ -39,45 +40,38 @@ def process(db):
 
         player_winrates = get_player_winrates(db, tank_winrates.index)
 
-        merged = pd.concat([tank_winrates['tank_winrate'], player_winrates['player_winrate']], axis=1).reset_index(drop=True)
+        merged = pd.concat([tank_winrates['tank_winrate'], player_winrates['player_winrate']], axis=1).reset_index(
+            drop=True)
         merged['bins'] = pd.cut(merged['player_winrate'], bins=np.arange(0, 1, 0.005))
 
-        binned = merged.groupby(merged['bins']).mean().dropna()  # todo count, and remove percents with < 100 players
+        means = merged.groupby(merged['bins']).mean()
+        counts = merged.groupby(merged['bins']).count()
+        binned = means[counts > 10].dropna()  # -> only consider percentages with more than 10 players
+        total_players = counts[counts > 10].sum()[0].astype(int)
         binned.index = binned.index.map(lambda x: x.mid)
 
-        plot(binned, current_tank, tank_id, tank)
+        plot(binned, current_tank, tank_id, tank, total_players)
 
 
-def plot(data, current_tank, tank_id, tank):
+def plot(data, current_tank, tank_id, tank, total_players):
     plt.clf()
     plt.plot(list(data.index.values), data['tank_winrate'], linestyle='-', marker='.')
     axes = plt.gca()
-    axes.set_xlim([0.4, 0.65])
-    axes.set_ylim([0.4, 0.65])
     axes.set_xlabel('player winrate')
     axes.set_ylabel('tank winrate')
-    axes.set_title(current_tank)
-    axes.set_xticks(np.arange(0.4, 0.65, 0.05))
-    axes.set_xticks(np.arange(0.4, 0.65, 0.01), minor=True)
-    axes.set_yticks(np.arange(0.4, 0.65, 0.05))
-    axes.set_yticks(np.arange(0.4, 0.65, 0.01), minor=True)
+    axes.set_title('{tank}: {players} players'.format(tank=current_tank, players=total_players))
     plt.grid(b=True, which='both')
-    axes.plot(axes.get_xlim(), axes.get_ylim(), ls="-", c=".3")
-    # plt.show()
-    plot_name = '{tier:02d}_{nation}_{tid}_{name}'.format(tier=tank['tier'], tid=tank_id, nation=tank['nation'], name=tank['shortname'])
+    axes.plot((0.4, 0.7), (0.4, 0.7), ls="-", c=".3")
+    plot_name = '{tier:02d}_{nation}_{tid}_{name}'.format(tier=tank['tier'], tid=tank_id, nation=tank['nation'],
+                                                          name=tank['shortname'])
     plot_name = unidecode(plot_name)
     plot_name = re.sub(r'\W+', '', plot_name)
-    plt.savefig('plots/' + plot_name)
+    plt.savefig('plots/pt_average/' + plot_name)
 
 
 def get_tanks(db):
-    return pd.read_sql("SELECT * from wot.vehicle", con=db, index_col='tankid')
-
-
-def main():
-    db = get_db_config()
-    datapoints = process(db)
+    return pd.read_sql("SELECT * FROM wot.vehicle", con=db, index_col='tankid')
 
 
 if __name__ == '__main__':
-    main()
+    pt_average(get_db_config())
