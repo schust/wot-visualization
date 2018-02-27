@@ -27,7 +27,7 @@ def get_tank_winrates(db, vehicle_id, min_battles=100):
     return data
 
 
-def pt_average(db):
+def pt_scatter(db):
     tanks = get_tanks(db)
     tanks.sort_index(inplace=True, ascending=False)
     for tank_id, tank in tanks.iterrows():
@@ -85,4 +85,4 @@ def get_tanks(db):
 
 
 if __name__ == '__main__':
-    pt_average(get_db_config())
+    pt_scatter(get_db_config())

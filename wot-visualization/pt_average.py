@@ -1,6 +1,7 @@
 import time
 import re
 
+from matplotlib.ticker import PercentFormatter
 from unidecode import unidecode
 from db import get_db_config
 import pandas as pd
@@ -27,7 +28,7 @@ def get_tank_winrates(db, vehicle_id, min_battles=100):
 
 def pt_average(db):
     tanks = get_tanks(db)
-    tanks.sort_index(inplace=True, ascending=False)
+    tanks.sort_index(inplace=True)
     for tank_id, tank in tanks.iterrows():
         current_tank = 'tankid=[{0}]: {1}'.format(str(tank_id), tank['shortname'])
         print(current_tank)
@@ -60,6 +61,20 @@ def plot(data, current_tank, tank_id, tank, total_players):
     axes.set_xlabel('player winrate')
     axes.set_ylabel('tank winrate')
     axes.set_title('{tank}: {players} players'.format(tank=current_tank, players=total_players))
+
+    axes.xaxis.set_major_formatter(PercentFormatter(1))
+    axes.yaxis.set_major_formatter(PercentFormatter(1))
+
+    lims = (0.4, 0.701)
+    axes.set_xlim(lims)
+    axes.set_ylim(lims)
+
+    start, end = lims
+    axes.xaxis.set_ticks(np.arange(start, end, 0.05), minor=False)
+    axes.xaxis.set_ticks(np.arange(start, end, 0.025), minor=True)
+    axes.yaxis.set_ticks(np.arange(start, end, 0.05), minor=False)
+    axes.yaxis.set_ticks(np.arange(start, end, 0.025), minor=True)
+
     plt.grid(b=True, which='both')
     axes.plot((0.4, 0.7), (0.4, 0.7), ls="-", c=".3")
     plot_name = '{tier:02d}_{nation}_{tid}_{name}'.format(tier=tank['tier'], tid=tank_id, nation=tank['nation'],
