@@ -1,13 +1,13 @@
-import time
 import re
-import math
+import time
 
-from matplotlib.ticker import FormatStrFormatter, PercentFormatter
-from unidecode import unidecode
-from db import get_db_config
-import pandas as pd
-import numpy as np
 import matplotlib.pyplot as plt
+import numpy as np
+import pandas as pd
+from matplotlib.ticker import PercentFormatter
+from unidecode import unidecode
+
+from db import get_db_config
 
 
 def get_player_winrates(db, ids, min_battles=100):

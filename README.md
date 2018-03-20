@@ -4,6 +4,8 @@ This repository is a project about data analysis for World of Tanks.
 
 As of this moment I have gathered data from over 1 million players which played during patch 9.22 on the RU cluster.
 
+The results have been discussed on [Reddit](https://www.reddit.com/r/WorldofTanks/comments/815j8w/data_analysis_i_gathered_data_from_over_1_million/).
+
 ## Plots
 ### Player/Tank winrate plots
 [Here (average)](wot-visualization/plots/pt_average) and [here (scatter)](wot-visualization/plots/pt_scatter), you can see player/tank winrate plots. I believe that this kind of visualization is the best way to showcase the concept of *OPness* in WoT. The idea is simple: Plot the winrate of players vs the winrate they have in single tanks. In the first case we show the average tank winrates.

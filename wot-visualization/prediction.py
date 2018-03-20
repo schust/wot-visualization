@@ -20,11 +20,12 @@ from sklearn.tree import DecisionTreeClassifier
 
 print('Started at ' + str(datetime.datetime.now()))
 
-data = pd.read_csv('../data/201710200919.csv', delimiter=',')
+data = pd.read_csv('~/Dropbox/replays/201803101025.csv', delimiter=',')
 
 print(data.shape)
 data = data.replace([np.inf, -np.inf], np.nan)
 data = data.dropna()
+data = data.loc[:, (data != data.iloc[0]).any()]
 print(data.shape)
 
 # print(np.all(np.isfinite(X_train)))
@@ -37,20 +38,15 @@ print(y.shape)
 
 X = data.drop('label', axis=1)
 
-# for column in data.columns:
-#     desc = data[column].describe()
-#     if 'Count' not in column:
-#         print('[' + column + '] min: ' + str(desc['min']) + ' mean: ' + str(desc['mean']) + ' max: ' + str(desc['max']) + ' std: ' + str(desc['std']))
-
 min_max_scaler = preprocessing.MinMaxScaler()
 np_scaled = min_max_scaler.fit_transform(X)
 X = pd.DataFrame(np_scaled)
 
-sel = VarianceThreshold()
-X = sel.fit_transform(X)
-
-X = SelectKBest(f_regression, k=200).fit_transform(X, y)
-X = pd.DataFrame(X)
+# sel = VarianceThreshold()
+# X = sel.fit_transform(X)
+#
+# X = SelectKBest(f_regression, k=200).fit_transform(X, y)
+# X = pd.DataFrame(X)
 
 # pca = PCA()
 # pca.fit(X)
@@ -64,16 +60,10 @@ X_train, X_test, y_train, y_test = train_test_split(X, y, random_state=1)
 #     print(row)
 
 # KNN
-# print('KNN')
-# classifier = KNeighborsClassifier(n_neighbors=30)
-# classifier.fit(X_train, y_train)
-# y_pred = classifier.predict(X_test)
-#
-# acc = accuracy_score(y_test, y_pred)
-# print('acc: ' + str(acc))
-#
-# conf = confusion_matrix(y_test, y_pred)
-# print(conf)
+print('KNN')
+classifier = KNeighborsClassifier(n_neighbors=30)
+classifier.fit(X_train, y_train)
+y_pred = classifier.predict(X_test)
 
 
 # SVC
@@ -85,12 +75,6 @@ X_train, X_test, y_train, y_test = train_test_split(X, y, random_state=1)
 # classifier = SVC(verbose=True, kernel='linear')
 # classifier.fit(X_train, y_train)
 # y_pred = classifier.predict(X_test)
-#
-# acc = accuracy_score(y_test, y_pred)
-# print('acc: ' + str(acc))
-#
-# conf = confusion_matrix(y_test, y_pred)
-# print(conf)
 
 
 # GRADIENT BOOSTING
@@ -98,12 +82,6 @@ X_train, X_test, y_train, y_test = train_test_split(X, y, random_state=1)
 # classifier = GradientBoostingClassifier()
 # classifier.fit(X_train, y_train)
 # y_pred = classifier.predict(X_test)
-#
-# acc = accuracy_score(y_test, y_pred)
-# print('acc: ' + str(acc))
-#
-# conf = confusion_matrix(y_test, y_pred)
-# print(conf)
 
 
 # ADABOOST
@@ -111,12 +89,6 @@ X_train, X_test, y_train, y_test = train_test_split(X, y, random_state=1)
 # classifier = AdaBoostClassifier()
 # classifier.fit(X_train, y_train)
 # y_pred = classifier.predict(X_test)
-#
-# acc = accuracy_score(y_test, y_pred)
-# print('acc: ' + str(acc))
-#
-# conf = confusion_matrix(y_test, y_pred)
-# print(conf)
 
 
 # RANDOM FOREST
@@ -124,25 +96,13 @@ X_train, X_test, y_train, y_test = train_test_split(X, y, random_state=1)
 # classifier = RandomForestClassifier()
 # classifier.fit(X_train, y_train)
 # y_pred = classifier.predict(X_test)
-#
-# acc = accuracy_score(y_test, y_pred)
-# print('acc: ' + str(acc))
-#
-# conf = confusion_matrix(y_test, y_pred)
-# print(conf)
 
 
 # NEURAL NET
-print('MLP')
-classifier = MLPClassifier(verbose=True, solver='adam', max_iter=10000)
-classifier.fit(X_train, y_train)
-y_pred = classifier.predict(X_test)
-
-acc = accuracy_score(y_test, y_pred)
-print('acc: ' + str(acc))
-
-conf = confusion_matrix(y_test, y_pred)
-print(conf)
+# print('MLP')
+# classifier = MLPClassifier(verbose=True, solver='adam', max_iter=10000)
+# classifier.fit(X_train, y_train)
+# y_pred = classifier.predict(X_test)
 
 
 # NAIVE BAYES
@@ -150,12 +110,6 @@ print(conf)
 # classifier = GaussianNB()
 # classifier.fit(X_train, y_train)
 # y_pred = classifier.predict(X_test)
-#
-# acc = accuracy_score(y_test, y_pred)
-# print('acc: ' + str(acc))
-#
-# conf = confusion_matrix(y_test, y_pred)
-# print(conf)
 
 
 # MULTINOMIAL NAIVE BAYES
@@ -163,12 +117,6 @@ print(conf)
 # classifier = MultinomialNB(fit_prior=False)
 # classifier.fit(X_train, y_train)
 # y_pred = classifier.predict(X_test)
-#
-# acc = accuracy_score(y_test, y_pred)
-# print('acc: ' + str(acc))
-#
-# conf = confusion_matrix(y_test, y_pred)
-# print(conf)
 
 
 # BERNOULLI NB
@@ -176,12 +124,6 @@ print(conf)
 # classifier = BernoulliNB(binarize=0.1)
 # classifier.fit(X_train, y_train)
 # y_pred = classifier.predict(X_test)
-#
-# acc = accuracy_score(y_test, y_pred)
-# print('acc: ' + str(acc))
-#
-# conf = confusion_matrix(y_test, y_pred)
-# print(conf)
 
 
 # TREE
@@ -189,12 +131,6 @@ print(conf)
 # classifier = DecisionTreeClassifier()
 # classifier.fit(X_train, y_train)
 # y_pred = classifier.predict(X_test)
-#
-# acc = accuracy_score(y_test, y_pred)
-# print('acc: ' + str(acc))
-#
-# conf = confusion_matrix(y_test, y_pred)
-# print(conf)
 
 
 # LOGREG 'newton-cg', 'lbfgs', 'liblinear', 'sag'
@@ -202,12 +138,6 @@ print(conf)
 # classifier = LogisticRegression(penalty='lbfgs')
 # classifier.fit(X_train, y_train)
 # y_pred = classifier.predict(X_test)
-#
-# acc = accuracy_score(y_test, y_pred)
-# print('acc: ' + str(acc))
-#
-# conf = confusion_matrix(y_test, y_pred)
-# print(conf)
 
 
 # SGD
@@ -215,12 +145,12 @@ print(conf)
 # classifier = SGDClassifier(penalty='l1')
 # classifier.fit(X_train, y_train)
 # y_pred = classifier.predict(X_test)
-#
-# acc = accuracy_score(y_test, y_pred)
-# print('acc: ' + str(acc))
-#
-# conf = confusion_matrix(y_test, y_pred)
-# print(conf)
+
+acc = accuracy_score(y_test, y_pred)
+print('acc: ' + str(acc))
+
+conf = confusion_matrix(y_test, y_pred)
+print(conf)
 
 
 
