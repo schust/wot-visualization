@@ -2,6 +2,8 @@ import time
 import re
 import math
 
+import matplotlib
+matplotlib.use('Agg')
 from matplotlib.ticker import FormatStrFormatter, PercentFormatter
 from unidecode import unidecode
 from db import get_db_config
